@@ -1,0 +1,41 @@
+/* management.css */
+
+/* Full Page Border */
+.page-border {
+  max-width: 1200px;
+  border: 6px solid #dc3545; /* Red border */
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+/* Team Member Styling */
+.team-member {
+  padding: 10px;
+}
+
+.team-member img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid #dc3545; /* Red border around image */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.team-member img:hover {
+  transform: scale(1.05);
+  border-color: #b02a37; /* Darker red on hover */
+}
+
+.team-member h5 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.team-member p {
+  color: #555;
+  margin-top: 5px;
+}
