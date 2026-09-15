@@ -1,0 +1,58 @@
+const jsonHeaders = {
+  "Content-Type": "application/json"
+};
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
+
+function apiUrl(path) {
+  return `${apiBaseUrl}${path}`;
+}
+
+async function parseResponse(response) {
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong. Please try again.");
+  }
+  return data;
+}
+
+export async function submitAdmission(formData) {
+  const response = await fetch(apiUrl("/api/admissions"), {
+    method: "POST",
+    credentials: "include",
+    body: formData
+  });
+  return parseResponse(response);
+}
+
+export async function loginAdmin(credentials) {
+  const response = await fetch(apiUrl("/api/admin/login"), {
+    method: "POST",
+    headers: jsonHeaders,
+    credentials: "include",
+    body: JSON.stringify(credentials)
+  });
+  return parseResponse(response);
+}
+
+export async function getAdmissions() {
+  const response = await fetch(apiUrl("/api/admin/admissions"), {
+    credentials: "include"
+  });
+  return parseResponse(response);
+}
+
+export async function logoutAdmin() {
+  const response = await fetch(apiUrl("/api/admin/logout"), {
+    method: "POST",
+    credentials: "include"
+  });
+  return parseResponse(response);
+}
+
+export async function getGalleryEvents() {
+  return parseResponse(await fetch(apiUrl("/api/gallery/events")));
+}
+
+export async function createGalleryEvent(formData) {
+  return parseResponse(await fetch(apiUrl("/api/gallery/events"), { method: "POST", credentials: "include", body: formData }));
+}
