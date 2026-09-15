@@ -12,9 +12,7 @@ export default [
       "public/**",
       "frontend/public/**",
       "backend/uploads/**",
-      "gyanmudraschool-main/**",
-      "bootstrap-4.0.0-dist/**",
-      "font/**"
+      "gyanmudraschool-main/**"
     ]
   },
   {
