@@ -1,0 +1,36 @@
+# Dependencies and production build output
+node_modules/
+dist/
+build/
+frontend/dist/
+frontend/.vite/
+
+# Secrets and local environment overrides (never commit values)
+.env
+.env.*
+!.env.example
+*.local
+
+# Local uploads and runtime data (persistent media belongs in MongoDB GridFS)
+backend/uploads/
+backend/tmp/
+/db.php
+/uploads/
+/gyanmudraschool-main/db.php
+/gyanmudraschool-main/uploads/
+/gyanmudraschool-main/public/uploads/
+
+# Logs, caches, coverage, and temporary files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+.cache/
+.vite/
+*.tmp
+*.temp
+*.swp
+*~
