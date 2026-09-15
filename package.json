@@ -1,0 +1,22 @@
+{
+  "name": "gyan-mudra-academy",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MERN website for Gyan Mudra Academy with separated frontend and backend apps.",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix backend run start",
+    "lint": "npm --prefix frontend run lint && npm --prefix backend run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
