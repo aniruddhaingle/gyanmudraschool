@@ -105,10 +105,49 @@ app.use("/api/admin", adminRouter);
 app.use("/api/gallery", galleryRouter);
 app.use("/api", notFound);
 
+// Public pages of the React app; anything else gets the app's "not found" page with a real 404 status.
+const sitePages = ["/", "/about", "/admissions", "/gallery", "/leadership"];
+const appRoutes = new Set([...sitePages, "/admin"]);
+
+// Absolute site address for share previews and the sitemap. Set PUBLIC_SITE_URL in production.
+function siteUrl(req) {
+  if (process.env.PUBLIC_SITE_URL) return process.env.PUBLIC_SITE_URL.replace(/\/+$/, "");
+  const host = /^[a-z0-9.:-]+$/i.test(req.get("host") || "") ? req.get("host") : "localhost";
+  return `${req.protocol}://${host}`;
+}
+
 if (isProduction) {
-  app.use(express.static(frontendDistDir));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendDistDir, "index.html"));
+  let indexTemplate;
+  app.use(express.static(frontendDistDir, {
+    index: false,
+    redirect: false,
+    setHeaders(res, filePath) {
+      // Vite's /assets files have content hashes in their names, so they never change.
+      const cache = filePath.includes(`${path.sep}assets${path.sep}`) ? "public, max-age=31536000, immutable" : "public, max-age=604800";
+      res.set("Cache-Control", cache);
+    }
+  }));
+
+  app.get("/robots.txt", (req, res) => {
+    res.type("text/plain").send(`User-agent: *\nDisallow: /admin\nDisallow: /api/\n\nSitemap: ${siteUrl(req)}/sitemap.xml\n`);
+  });
+
+  app.get("/sitemap.xml", (req, res) => {
+    const urls = sitePages.map((page) => `  <url><loc>${siteUrl(req)}${page}</loc></url>`).join("\n");
+    res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  });
+
+  app.get("*", async (req, res, next) => {
+    try {
+      indexTemplate ??= await fs.promises.readFile(path.join(frontendDistDir, "index.html"), "utf8");
+      const page = req.path.replace(/\/+$/, "") || "/";
+      res.status(appRoutes.has(page) ? 200 : 404)
+        .set("Cache-Control", "no-cache")
+        .type("html")
+        .send(indexTemplate.replaceAll("__SITE_URL__", siteUrl(req)));
+    } catch (error) {
+      next(error);
+    }
   });
 }
 

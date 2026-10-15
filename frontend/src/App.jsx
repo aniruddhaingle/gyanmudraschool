@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
@@ -8,7 +8,18 @@ import Leadership from "./pages/Leadership.jsx";
 import Admin from "./pages/Admin.jsx";
 
 function NotFound() {
-  return <main className="page-section"><h1>Page not found</h1><p>The page you requested does not exist.</p></main>;
+  return (
+    <section className="not-found">
+      <span>ERROR 404</span>
+      <h1>This page went on a field trip.</h1>
+      <p>We couldn’t find the page you were looking for. It may have moved, or the link may be mistyped.</p>
+      <nav aria-label="Helpful links">
+        <Link to="/">Go to home</Link>
+        <Link to="/admissions">Admissions</Link>
+        <Link to="/gallery">Gallery</Link>
+      </nav>
+    </section>
+  );
 }
 
 export default function App() {

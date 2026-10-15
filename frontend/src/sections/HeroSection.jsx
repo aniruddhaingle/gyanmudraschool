@@ -2,12 +2,21 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CalendarCheck, Microscope, ShieldCheck, Sparkles, Trophy } from "lucide-react";
 import { heroSlides, school } from "../data/school.js";
+import { responsiveImage } from "../utils/images.js";
 
 export default function HeroSection() {
   const [activeSlide, setActiveSlide] = useState(0);
+  // Download a slide only once it is showing or up next, instead of every photo on first load.
+  const [loaded, setLoaded] = useState(() => new Set([0, 1]));
   const slide = heroSlides[activeSlide];
 
   useEffect(() => {
+    setLoaded((current) => new Set([...current, activeSlide, (activeSlide + 1) % heroSlides.length]));
+  }, [activeSlide]);
+
+  useEffect(() => {
+    // Respect phones and computers set to reduce motion: no automatic slide changes.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
     const timer = window.setInterval(() => {
       setActiveSlide((current) => (current + 1) % heroSlides.length);
     }, 5200);
@@ -19,12 +28,15 @@ export default function HeroSection() {
     <section className="hero">
       <div className="hero-media">
         {heroSlides.map((item, index) => (
-          <img
-            className={index === activeSlide ? "active" : ""}
-            src={item.image}
-            alt={`${school.name} highlight ${index + 1}`}
-            key={item.image}
-          />
+          loaded.has(index) ? (
+            <img
+              className={index === activeSlide ? "active" : ""}
+              {...responsiveImage(item.image)}
+              sizes="100vw"
+              alt={index === activeSlide ? `Students at ${school.name}, ${school.location}` : ""}
+              key={item.image}
+            />
+          ) : null
         ))}
       </div>
       <div className="mesh-field" />
@@ -43,7 +55,7 @@ export default function HeroSection() {
       <div className="hero-content">
         <span className="pill"><Sparkles size={16} /> {slide.kicker}</span>
         <span className="hero-edition">FOR THE CURIOUS, THE KIND & THE READY</span>
-        <h1>{slide.title}</h1>
+        <h1><span className="sr-only">{school.name}, {school.location}: </span>{slide.title}</h1>
         <p>{slide.text}</p>
         <div className="hero-actions">
           <Link className="primary-action" to="/admissions">

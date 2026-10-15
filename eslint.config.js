@@ -16,7 +16,7 @@ export default [
     ]
   },
   {
-    files: ["frontend/src/**/*.{js,jsx}", "backend/src/**/*.js"],
+    files: ["frontend/src/**/*.{js,jsx}", "frontend/scripts/**/*.mjs", "backend/src/**/*.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
@@ -34,7 +34,9 @@ export default [
         process: "readonly",
         console: "readonly",
         URL: "readonly",
-        setTimeout: "readonly"
+        setTimeout: "readonly",
+        createImageBitmap: "readonly",
+        File: "readonly"
       }
     },
     plugins: {

@@ -11,7 +11,7 @@ const router = express.Router();
 
 const admissionLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  limit: 8,
+  limit: 20,
   message: { message: "Too many admission attempts. Please try again later." },
   standardHeaders: "draft-7",
   legacyHeaders: false
@@ -33,7 +33,8 @@ const admissionRules = [
 router.post("/", admissionLimiter, (req, res, next) => {
   uploadStudentPhoto(req, res, (error) => {
     if (error) {
-      return res.status(400).json({ message: error.message });
+      const message = error.code === "LIMIT_FILE_SIZE" ? "This photo is too large. Please choose a photo under 6 MB." : error.message;
+      return res.status(400).json({ message });
     }
     return next();
   });

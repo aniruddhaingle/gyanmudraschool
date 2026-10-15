@@ -1,6 +1,7 @@
 import SectionHeader from "../components/SectionHeader.jsx";
 import Reveal from "../effects/Reveal.jsx";
 import { leadership } from "../data/school.js";
+import { responsiveImage } from "../utils/images.js";
 
 export default function LeadershipPreview() {
   return (
@@ -10,7 +11,7 @@ export default function LeadershipPreview() {
         {leadership.map((person, index) => (
           <Reveal as="article" className="leader-card" delay={index * 100} key={person.name}>
             <div className="leader-photo">
-              <img src={person.image} alt={`${person.name}, ${person.role}`} />
+              <img {...responsiveImage(person.image)} sizes="(max-width: 700px) 90vw, 400px" alt={`${person.name}, ${person.role}`} loading="lazy" />
             </div>
             <div>
               <span>{person.role}</span>

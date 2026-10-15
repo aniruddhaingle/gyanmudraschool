@@ -4,7 +4,7 @@ import { achievements, facilities } from "../data/school.js";
 export default function About() {
   return (
     <section className="page-shell about-page">
-      <PageHero eyebrow="Our little-big story" title="School, but make it a launchpad." text="We mix strong learning, wide-open curiosity, and real care—so children can grow into their loudest, kindest, most capable selves." badge="SINCE DAY ONE" image="/images/slider1.png" tone="teal" />
+      <PageHero eyebrow="Our little-big story" title="School, but make it a launchpad." text="We mix strong learning, wide-open curiosity, and real care—so children can grow into their loudest, kindest, most capable selves." badge="SINCE DAY ONE" image="/images/slider1.webp" tone="teal" />
 
       <div className="story-grid page-content">
         <article className="story-card wide">

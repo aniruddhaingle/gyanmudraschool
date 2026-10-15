@@ -1,9 +1,10 @@
 import { Sparkles } from "lucide-react";
+import { responsiveImage } from "../utils/images.js";
 
 export default function PageHero({ eyebrow, title, text, badge = "GOOD ENERGY ONLY", image, tone = "purple" }) {
   return (
     <section className={`page-hero page-hero-${tone}`}>
-      {image ? <img src={image} alt="" /> : null}
+      {image ? <img {...responsiveImage(image)} sizes="100vw" alt="" decoding="async" /> : null}
       <div className="page-hero-scribble" aria-hidden="true">✦</div>
       <div className="page-hero-copy">
         <span className="page-hero-eyebrow"><Sparkles size={15} /> {eyebrow}</span>

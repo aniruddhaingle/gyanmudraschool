@@ -2,8 +2,10 @@ import { useState } from "react";
 import { ArrowRight, FileCheck2, PhoneCall, ShieldCheck, Sparkles, Upload } from "lucide-react";
 import Reveal from "../effects/Reveal.jsx";
 import { submitAdmission } from "../services/api.js";
+import { compressImage } from "../utils/compressImage.js";
 import PageHero from "../components/PageHero.jsx";
 import SectionHeader from "../components/SectionHeader.jsx";
+import { admissionSession } from "../data/school.js";
 
 const initialState = {
   firstName: "",
@@ -21,9 +23,26 @@ export default function Admissions() {
   const [photo, setPhoto] = useState(null);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [loading, setLoading] = useState(false);
+  const [preparingPhoto, setPreparingPhoto] = useState(false);
 
   function updateField(event) {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  }
+
+  async function handlePhoto(event) {
+    const file = event.target.files?.[0];
+    setPhoto(null);
+    if (!file) return;
+    setPreparingPhoto(true);
+    const ready = await compressImage(file);
+    setPreparingPhoto(false);
+    if (ready.size > 6 * 1024 * 1024) {
+      event.target.value = "";
+      setStatus({ type: "error", message: "This photo is too large. Please choose a photo under 6 MB." });
+      return;
+    }
+    setStatus({ type: "", message: "" });
+    setPhoto(ready);
   }
 
   async function handleSubmit(event) {
@@ -50,7 +69,7 @@ export default function Admissions() {
 
   return (
     <section className="page-shell admission-page">
-      <PageHero eyebrow="Admissions 2026" title="Let’s make this official." text="One short form is all it takes to start a thoughtful conversation about your child’s next chapter." badge="YOU’RE INVITED" image="/images/slider2.png" tone="purple" />
+      <PageHero eyebrow={`Admissions ${admissionSession()}`} title="Let’s make this official." text="One short form is all it takes to start a thoughtful conversation about your child’s next chapter." badge="YOU’RE INVITED" image="/images/slider2.webp" tone="purple" />
       <div className="admission-stage">
       <div className="admission-hero-panel">
         <Reveal>
@@ -108,8 +127,8 @@ export default function Admissions() {
           </label>
           <label className="form-field photo-upload-field">
             <span>Student photo <em>JPG, PNG or WEBP</em></span>
-            <input className="photo-file-input" type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => setPhoto(event.target.files?.[0] || null)} required />
-            <span className="photo-upload-button"><Upload size={19} /><strong>{photo ? photo.name : "Add a photo"}</strong><small>{photo ? "Ready to send" : "Tap to choose"}</small></span>
+            <input className="photo-file-input" type="file" accept="image/png,image/jpeg,image/webp" onChange={handlePhoto} required />
+            <span className="photo-upload-button"><Upload size={19} /><strong>{preparingPhoto ? "Preparing photo..." : photo ? photo.name : "Add a photo"}</strong><small>{photo ? "Ready to send" : "Tap to choose · any phone photo is fine"}</small></span>
           </label>
           <label className="form-field full">
             <span>Home address</span>
@@ -117,7 +136,7 @@ export default function Admissions() {
           </label>
         </div>
         {status.message ? <p className={`form-status ${status.type}`} role="status">{status.message}</p> : null}
-        <div className="form-submit-row"><p><ShieldCheck size={17} /> Your details go straight to our admissions team.</p><button className="primary-action form-button" disabled={loading}>{loading ? "Sending your story..." : <>Send my enquiry <ArrowRight size={19} /></>}</button></div>
+        <div className="form-submit-row"><p><ShieldCheck size={17} /> Your details go straight to our admissions team.</p><button className="primary-action form-button" disabled={loading || preparingPhoto}>{loading ? "Sending your story..." : <>Send my enquiry <ArrowRight size={19} /></>}</button></div>
       </Reveal>
       </div>
     </section>

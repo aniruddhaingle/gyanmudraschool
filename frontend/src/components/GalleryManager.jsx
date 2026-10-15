@@ -3,6 +3,7 @@ import { Pencil, Sparkles, Trash2, X } from "lucide-react";
 import { detectEventTheme, eventThemes, getEventTheme, resolveTheme, themeStyle } from "../data/eventThemes.js";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import ThemeCover from "./ThemeCover.jsx";
+import { compressImage } from "../utils/compressImage.js";
 import { createGalleryEvent, deleteGalleryEvent, getGalleryEvents, updateGalleryEvent } from "../services/api.js";
 
 const emptyForm = { title: "", tag: "", note: "", themeChoice: "auto" };
@@ -70,7 +71,8 @@ export default function GalleryManager() {
     data.append("tag", form.tag);
     data.append("note", form.note);
     data.append("theme", theme.key);
-    newPhotos.forEach((photo) => data.append("photos", photo));
+    const photos = await Promise.all(newPhotos.map((photo) => compressImage(photo, { maxSize: 2000 })));
+    photos.forEach((photo) => data.append("photos", photo));
     removePhotos.forEach((photo) => data.append("removePhotos", photo));
     try {
       if (editing) {
@@ -156,7 +158,7 @@ export default function GalleryManager() {
             </div>
           ) : null}
 
-          <label>{editing ? "Add more photos" : "Photos"} <em>Optional · JPG, PNG or WEBP · up to 15 at a time, 5 MB each</em>
+          <label>{editing ? "Add more photos" : "Photos"} <em>Optional · JPG, PNG or WEBP · up to 15 at a time · large phone photos are shrunk automatically</em>
             <input key={fileInputKey} type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(e) => setNewPhotos([...(e.target.files || [])])} />
           </label>
 

@@ -5,24 +5,30 @@ export const school = {
   phone: "+91 9111334655",
   address: "Gyan Mudra Academy, Palsud, Barwani",
   tagline: "Big questions. Bright futures.",
-  heroImage: "/images/banner.png"
+  heroImage: "/images/banner.webp"
 };
+
+// Indian school sessions start in April; from October onwards families are applying for the next session.
+export function admissionSession(date = new Date()) {
+  const start = date.getMonth() >= 9 ? date.getFullYear() + 1 : date.getFullYear();
+  return `${start}–${String(start + 1).slice(-2)}`;
+}
 
 export const heroSlides = [
   {
-    image: "/images/banner.png",
+    image: "/images/banner.webp",
     kicker: "Your next era starts here",
     title: "Learn loud. Dream bigger.",
     text: "A joyful school experience where strong basics, brave ideas, and real-world confidence grow side by side."
   },
   {
-    image: "/images/slider2.png",
+    image: "/images/slider2.webp",
     kicker: "Not your average classroom",
     title: "Less cramming. More aha! moments.",
     text: "Students explore, question, make, practise, and explain—because the best learning sticks when it feels alive."
   },
   {
-    image: "/images/slider4.png",
+    image: "/images/slider4.webp",
     kicker: "Main-character energy",
     title: "Find your thing. Then go for it.",
     text: "From JNV and EMRS prep to sport, science, speaking, and creativity, there’s more than one way to shine."
@@ -41,19 +47,19 @@ export const programs = [
     title: "The Big Begin",
     range: "Primary years",
     text: "Stories, numbers, hands-on discovery, and confidence-building routines for little learners with huge imaginations.",
-    image: "/images/2_1.jpg"
+    image: "/images/2_1.webp"
   },
   {
     title: "Level Up Years",
     range: "Classes 6-8",
     text: "Deeper concepts, practical science, projects, speaking skills, and the kind of study habits that make progress feel possible.",
-    image: "/images/slider369.png"
+    image: "/images/slider369.webp"
   },
   {
     title: "Future Moves",
     range: "JNV · EMRS · Olympiads",
     text: "Focused practice, doubt-solving, mock tests, and steady mentoring for learners ready to take their next shot.",
-    image: "/images/slider69.png"
+    image: "/images/slider69.webp"
   }
 ];
 
@@ -61,25 +67,25 @@ export const campusShowcase = [
   {
     title: "Idea Lab",
     text: "A space for visual learning, sharp questions, and ‘wait, I get it now!’ moments.",
-    image: "/images/slider1.png",
+    image: "/images/slider1.webp",
     tone: "large"
   },
   {
     title: "Stage + Squad",
     text: "Debates, assemblies, projects, teams, and plenty of room for every voice.",
-    image: "/images/bg8.jpg",
+    image: "/images/bg8.webp",
     tone: "dark"
   },
   {
     title: "Calm & Cared For",
     text: "Clean spaces, clear routines, and adults who notice the little things.",
-    image: "/images/5.jpeg",
+    image: "/images/5.webp",
     tone: "light"
   },
   {
     title: "Next-Level Prep",
     text: "Mentored prep for JNV, EMRS, scholarships, and Olympiads—one doable step at a time.",
-    image: "/images/slider69.png",
+    image: "/images/slider69.webp",
     tone: "accent"
   }
 ];
@@ -128,18 +134,18 @@ export const leadership = [
   {
     name: "Anand Rao Ingle",
     role: "Principal & Director",
-    image: "/images/principal.jpg",
+    image: "/images/principal.webp",
     summary:
       "A calm, clear-headed academic leader who makes maths, discipline, and daily progress feel possible.",
     detail:
       "Mr. Anand Rao Ingle brings a practical, student-first approach to classroom excellence, everyday confidence, and honest parent partnership.",
     education: "M.Sc. Mathematics, M.Ed",
-    email: "principal@gyanmudra.edu.in"
+    email: "anandraoingle13@gmail.com"
   },
   {
     name: "Sushma Ingle",
     role: "Secretary",
-    image: "/images/secretary.jpg",
+    image: "/images/secretary.webp",
     summary:
       "The steady force behind planning, community connection, and a school experience that keeps getting better.",
     detail:
@@ -147,17 +153,6 @@ export const leadership = [
     education: "School management and community leadership",
     email: school.email
   }
-];
-
-export const gallery = [
-  "/images/slider1.png",
-  "/images/slider2.png",
-  "/images/slider3.png",
-  "/images/slider4.png",
-  "/images/bg8.jpg",
-  "/uploads/WhatsApp Image 2025-08-08 at 2.19.08 PM.jpeg",
-  "/uploads/Screenshot 2023-04-05 213625.png",
-  "/images/5.jpeg"
 ];
 
 export const galleryEvents = [
