@@ -3,7 +3,7 @@ import { body } from "express-validator";
 import { requireAdmin } from "../middleware/auth.js";
 import GalleryEvent from "../models/GalleryEvent.js";
 import { isAllowedImage, uploadGalleryPhotos } from "../middleware/upload.js";
-import { storeImage } from "../utils/media.js";
+import { storeGalleryImage } from "../utils/media.js";
 import { handleValidation } from "../utils/validate.js";
 
 const router = express.Router();
@@ -16,8 +16,9 @@ router.post("/events", requireAdmin, uploadGalleryPhotos, [body("title").trim().
   try {
     const valid = (req.files || []).map(isAllowedImage);
     if (valid.includes(false)) throw new Error("One or more files are not valid images.");
-    const photos = await Promise.all((req.files || []).map(storeImage));
-    const event = await GalleryEvent.create({ ...req.body, photos });
+    const photos = await Promise.all((req.files || []).map((file) => storeGalleryImage(file)));
+    const { title, tag, note } = req.body;
+    const event = await GalleryEvent.create({ title, tag, note, photos });
     res.status(201).json({ event });
   } catch (error) {
     next(error);

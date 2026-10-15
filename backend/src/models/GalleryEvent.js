@@ -7,4 +7,6 @@ const galleryEventSchema = new mongoose.Schema({
   photos: [{ type: String, required: true }]
 }, { timestamps: true });
 
+galleryEventSchema.index({ photos: 1 });
+
 export default mongoose.model("GalleryEvent", galleryEventSchema);

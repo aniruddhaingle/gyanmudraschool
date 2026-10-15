@@ -12,6 +12,8 @@ const admissionSchema = new mongoose.Schema(
     classApplied: { type: String, required: true, trim: true, maxlength: 40 },
     photo: {
       originalName: String,
+      // Private GridFS file id; older records only have a public fileName URL.
+      fileId: mongoose.Schema.Types.ObjectId,
       fileName: String,
       mimeType: String,
       size: Number

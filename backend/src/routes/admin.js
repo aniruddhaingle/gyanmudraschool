@@ -9,8 +9,16 @@ import Admission from "../models/Admission.js";
 import AdminUser from "../models/AdminUser.js";
 import { handleValidation } from "../utils/validate.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { parseObjectId, PRIVATE_BUCKET, PUBLIC_BUCKET, streamImage } from "../utils/media.js";
 
 const router = express.Router();
+
+// SameSite=strict means the frontend and API must share a site (e.g. www.example.org and api.example.org).
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict"
+};
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -43,12 +51,7 @@ router.post(
 
     const token = jwt.sign({ sub: admin.id, email: admin.email, role: admin.role }, process.env.JWT_SECRET, { expiresIn: "2h" });
 
-    res.cookie("admin_token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 2 * 60 * 60 * 1000
-    });
+    res.cookie("admin_token", token, { ...cookieOptions, maxAge: 2 * 60 * 60 * 1000 });
 
     return res.json({ message: "Login successful." });
   })
@@ -68,8 +71,28 @@ router.get("/admissions", requireAdmin, asyncHandler(async (req, res) => {
   return res.json({ admissions });
 }));
 
+router.get("/admissions/:id/photo", requireAdmin, asyncHandler(async (req, res) => {
+  const id = parseObjectId(req.params.id);
+  if (!id || mongoose.connection.readyState !== 1) {
+    return res.status(404).json({ message: "Photo not found." });
+  }
+
+  const admission = await Admission.findById(id).select("photo").lean();
+  if (admission?.photo?.fileId) {
+    return streamImage(PRIVATE_BUCKET, admission.photo.fileId, res, "private, no-store");
+  }
+
+  // Admissions created before photos moved to the private bucket.
+  const legacyId = parseObjectId(admission?.photo?.fileName?.split("/").pop());
+  if (legacyId) {
+    return streamImage(PUBLIC_BUCKET, legacyId, res, "private, no-store");
+  }
+
+  return res.status(404).json({ message: "Photo not found." });
+}));
+
 router.post("/logout", requireAdmin, (req, res) => {
-  res.clearCookie("admin_token");
+  res.clearCookie("admin_token", cookieOptions);
   res.json({ message: "Logged out." });
 });
 

@@ -4,7 +4,7 @@ import { body } from "express-validator";
 import mongoose from "mongoose";
 import Admission from "../models/Admission.js";
 import { isAllowedImage, uploadStudentPhoto } from "../middleware/upload.js";
-import { storeImage } from "../utils/media.js";
+import { storeAdmissionPhoto } from "../utils/media.js";
 import { handleValidation } from "../utils/validate.js";
 
 const router = express.Router();
@@ -16,6 +16,8 @@ const admissionLimiter = rateLimit({
   standardHeaders: "draft-7",
   legacyHeaders: false
 });
+
+const applicantFields = ["firstName", "lastName", "fatherName", "gender", "caste", "address", "phone", "classApplied"];
 
 const admissionRules = [
   body("firstName").trim().isLength({ min: 2, max: 80 }).withMessage("First name must be 2-80 characters."),
@@ -49,12 +51,15 @@ router.post("/", admissionLimiter, (req, res, next) => {
       return res.status(400).json({ message: "The uploaded file is not a valid JPG, PNG, or WEBP image." });
     }
 
-    const fileName = await storeImage(req.file);
+    const fileId = await storeAdmissionPhoto(req.file);
+    // Copy only validated applicant fields so clients cannot set status or other internal fields.
+    const fields = Object.fromEntries(applicantFields.map((key) => [key, req.body[key]]));
     const admission = await Admission.create({
-      ...req.body,
+      ...fields,
+      caste: fields.caste || "",
       photo: {
         originalName: req.file.originalname,
-        fileName,
+        fileId,
         mimeType: req.file.mimetype,
         size: req.file.size
       }

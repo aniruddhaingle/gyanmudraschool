@@ -13,9 +13,9 @@ import mongoose from "mongoose";
 import admissionsRouter from "./routes/admissions.js";
 import adminRouter from "./routes/admin.js";
 import galleryRouter from "./routes/gallery.js";
+import uploadsRouter from "./routes/uploads.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 import { ensureInitialAdmin } from "./utils/seedAdmin.js";
-import { streamImage } from "./utils/media.js";
 
 dotenv.config();
 
@@ -71,7 +71,7 @@ app.use(
   cors({
     origin(origin, callback) {
       if (!origin || getAllowedOrigins().includes(origin)) return callback(null, true);
-      return callback(new Error("Origin is not allowed by CORS."));
+      return callback(Object.assign(new Error("Origin is not allowed by CORS."), { status: 403 }));
     },
     credentials: true
   })
@@ -86,6 +86,10 @@ app.get("/api/health", (req, res) => {
   res.status(connected || !isProduction ? 200 : 503).json({ status: connected ? "ok" : "degraded", database: connected ? "connected" : "offline" });
 });
 
+// Public gallery images are mounted before the API limiter so a busy gallery page
+// (or many parents behind one school network) does not exhaust the shared quota.
+app.use("/api/uploads", uploadsRouter);
+
 app.use(
   "/api",
   rateLimit({
@@ -99,7 +103,7 @@ app.use(
 app.use("/api/admissions", admissionsRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/gallery", galleryRouter);
-app.get("/api/uploads/:id", (req, res) => streamImage(req.params.id, res));
+app.use("/api", notFound);
 
 if (isProduction) {
   app.use(express.static(frontendDistDir));

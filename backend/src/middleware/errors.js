@@ -4,7 +4,9 @@ export function notFound(req, res, next) {
   next(error);
 }
 
-export function errorHandler(error, req, res) {
+// Express only treats a middleware as an error handler when it declares all four arguments.
+// eslint-disable-next-line no-unused-vars
+export function errorHandler(error, req, res, next) {
   const status = error.name === "MulterError" ? 400 : error.status || error.statusCode || 500;
   const message = status === 500 ? "Internal server error" : error.message;
 

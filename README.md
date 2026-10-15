@@ -52,6 +52,19 @@ origin and add the frontend origin to `CLIENT_ORIGIN` (comma-separated when
 there is more than one). The API refuses to start in production without all
 required server configuration.
 
+The admin session cookie is `SameSite=Strict`, so a split deployment must keep
+the frontend and API on the same site, for example `www.example.org` and
+`api.example.org`. Hosting them on unrelated domains (such as two different
+`*.vercel.app` / `*.onrender.com` hosts) will stop admin login from working.
+
+## Media
+
+- Gallery photos are stored in the public `media` GridFS bucket and served at
+  `/api/uploads/:id` only when a published gallery event references them.
+- Admission (student) photos are stored in the private `admission-photos`
+  bucket and are only available to a logged-in admin at
+  `/api/admin/admissions/:id/photo`.
+
 ## Scripts
 
 ```bash
@@ -68,11 +81,11 @@ npm.cmd run lint         # lints both apps
 - Helmet security headers
 - CORS allowlist with credentials support
 - Global API rate limiting
-- Stricter login and admission submission rate limits
+- Stricter login and admission submission rate limits (public gallery images are exempt from the global limit)
 - Express body size limits
 - Mongo query sanitization
 - Server-side request validation
 - HTTP-only, secure production cookies for admin auth
 - File upload type and size restrictions
 - No active PHP handlers in the new app runtime
-- MongoDB GridFS for deployment-safe admission and gallery image uploads
+- MongoDB GridFS for deployment-safe uploads, with student photos kept in an admin-only bucket
