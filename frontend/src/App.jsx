@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
@@ -5,7 +6,9 @@ import About from "./pages/About.jsx";
 import Admissions from "./pages/Admissions.jsx";
 import Gallery from "./pages/Gallery.jsx";
 import Leadership from "./pages/Leadership.jsx";
-import Admin from "./pages/Admin.jsx";
+
+// The admin panel (editors, managers) is only downloaded when someone opens /admin.
+const Admin = lazy(() => import("./pages/Admin.jsx"));
 
 function NotFound() {
   return (
@@ -31,7 +34,7 @@ export default function App() {
         <Route path="/admissions" element={<Admissions />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/leadership" element={<Leadership />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin" element={<Suspense fallback={<section className="admin-auth" aria-busy="true" />}><Admin /></Suspense>} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

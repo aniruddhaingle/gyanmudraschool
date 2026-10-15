@@ -6,7 +6,7 @@ import { requireAdmin } from "../middleware/auth.js";
 import { isAllowedImage } from "../middleware/upload.js";
 import SiteSection from "../models/SiteSection.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { parseObjectId, SITE_BUCKET, storeSiteImage, streamImage } from "../utils/media.js";
+import { deleteUnusedSiteImages, parseObjectId, SITE_BUCKET, storeSiteImage, streamImage } from "../utils/media.js";
 import { clearSiteSectionsCache, getSiteSections } from "../utils/siteContent.js";
 
 // Public: saved website content (GET /api/site) and its photos (GET /api/site-media/:id).
@@ -26,6 +26,13 @@ publicSiteRouter.get("/site-media/:id", (req, res) => {
 export const adminSiteRouter = express.Router();
 adminSiteRouter.use(requireAdmin);
 
+// Runs in the background after a save or restore; a failure here never affects the admin's save.
+function cleanUpSiteImages() {
+  getSiteSections()
+    .then(deleteUnusedSiteImages)
+    .catch((error) => console.error("Could not clean up unused website photos:", error));
+}
+
 const requireDatabase = (req, res, next) => (mongoose.connection.readyState === 1
   ? next()
   : res.status(503).json({ message: "Database is not configured yet. Please set MONGODB_URI." }));
@@ -44,12 +51,14 @@ adminSiteRouter.put("/:key", requireDatabase, knownSection, asyncHandler(async (
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
   clearSiteSectionsCache();
+  cleanUpSiteImages();
   return res.json({ value: result.value });
 }));
 
 adminSiteRouter.delete("/:key", requireDatabase, knownSection, asyncHandler(async (req, res) => {
   await SiteSection.deleteOne({ key: req.params.key });
   clearSiteSectionsCache();
+  cleanUpSiteImages();
   return res.json({ message: "Section reset to the original content." });
 }));
 

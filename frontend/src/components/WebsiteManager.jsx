@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, ImagePlus, Images, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { getSiteSection, siteSections, validateSiteSection } from "../../../shared/siteContent.js";
 import { useSiteEditor } from "../context/SiteContent.jsx";
@@ -16,7 +16,7 @@ function pick(section, value) {
   return section.type === "object" ? pickFields(value) : value.map(pickFields);
 }
 
-function ImageField({ value, onChange, label }) {
+function ImageField({ value, onChange, label, maxSize = 1600 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,7 +27,7 @@ function ImageField({ value, onChange, label }) {
     setUploading(true);
     setError("");
     try {
-      const { url } = await uploadSiteImage(await compressImage(file, { maxSize: 2000 }));
+      const { url } = await uploadSiteImage(await compressImage(file, { maxSize, quality: 0.8, type: "image/webp" }));
       onChange(url);
     } catch (uploadError) {
       setError(uploadError.message);
@@ -52,7 +52,7 @@ function ImageField({ value, onChange, label }) {
 }
 
 function Field({ field, value, onChange }) {
-  if (field.type === "image") return <ImageField label={field.label} value={value} onChange={onChange} />;
+  if (field.type === "image") return <ImageField label={field.label} value={value} onChange={onChange} maxSize={field.maxSize} />;
   const props = { value: value ?? "", maxLength: field.max, onChange: (e) => onChange(e.target.value) };
   return (
     <label className="wm-field">
@@ -72,6 +72,19 @@ function ItemControls({ index, count, minItems, onMove, onRemove, label }) {
   );
 }
 
+// Re-renders only when its own item (or its position) changes.
+const ListItem = memo(function ListItem({ item, index, count, section, label, onFieldChange, onMove, onRemove }) {
+  return (
+    <fieldset className="wm-item">
+      <legend>{section.itemLabel} {index + 1}</legend>
+      <ItemControls index={index} count={count} minItems={section.minItems} onMove={onMove} onRemove={onRemove} label={label} />
+      <div className="wm-fields">
+        {section.fields.map((field) => <Field key={field.name} field={field} value={item[field.name]} onChange={(v) => onFieldChange(index, field.name, v)} />)}
+      </div>
+    </fieldset>
+  );
+});
+
 function SectionEditor({ section, initial, isSaved, onSaved, onReset, onDirtyChange }) {
   const [draft, setDraft] = useState(() => copy(initial));
   const [busy, setBusy] = useState(false);
@@ -80,13 +93,15 @@ function SectionEditor({ section, initial, isSaved, onSaved, onReset, onDirtyCha
   const dirty = JSON.stringify(draft) !== JSON.stringify(initial);
   useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
 
-  const setItem = (index, value) => setDraft((list) => list.map((item, i) => (i === index ? value : item)));
-  const move = (index, step) => setDraft((list) => {
+  // Stable callbacks so a keystroke only re-renders the one list item being edited.
+  const setItem = useCallback((index, value) => setDraft((list) => list.map((item, i) => (i === index ? value : item))), []);
+  const setItemField = useCallback((index, name, value) => setDraft((list) => list.map((item, i) => (i === index ? { ...item, [name]: value } : item))), []);
+  const move = useCallback((index, step) => setDraft((list) => {
     const next = [...list];
     [next[index], next[index + step]] = [next[index + step], next[index]];
     return next;
-  });
-  const remove = (index) => setDraft((list) => list.filter((_, i) => i !== index));
+  }), []);
+  const remove = useCallback((index) => setDraft((list) => list.filter((_, i) => i !== index)), []);
   const add = () => setDraft((list) => [...list, emptyItem(section)]);
 
   async function save() {
@@ -156,13 +171,7 @@ function SectionEditor({ section, initial, isSaved, onSaved, onReset, onDirtyCha
       {section.type === "list" ? (
         <div className="wm-list">
           {draft.map((item, index) => (
-            <fieldset className="wm-item" key={index}>
-              <legend>{section.itemLabel} {index + 1}</legend>
-              <ItemControls index={index} count={draft.length} minItems={section.minItems} onMove={move} onRemove={remove} label={label} />
-              <div className="wm-fields">
-                {section.fields.map((field) => <Field key={field.name} field={field} value={item[field.name]} onChange={(v) => setItem(index, { ...item, [field.name]: v })} />)}
-              </div>
-            </fieldset>
+            <ListItem key={index} item={item} index={index} count={draft.length} section={section} label={label} onFieldChange={setItemField} onMove={move} onRemove={remove} />
           ))}
         </div>
       ) : null}

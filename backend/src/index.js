@@ -15,7 +15,7 @@ import adminRouter from "./routes/admin.js";
 import galleryRouter from "./routes/gallery.js";
 import uploadsRouter from "./routes/uploads.js";
 import { adminSiteRouter, publicSiteRouter } from "./routes/site.js";
-import { getSiteSections, toInlineJson } from "./utils/siteContent.js";
+import { getSiteSections, heroPreloadTag, toInlineJson } from "./utils/siteContent.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 import { ensureInitialAdmin } from "./utils/seedAdmin.js";
 
@@ -78,6 +78,8 @@ app.use(
     credentials: true
   })
 );
+// Website manager sections can be long (e.g. 12 staff bios in Hindi); everything else stays small.
+app.use("/api/admin/site", express.json({ limit: "256kb" }));
 app.use(express.json({ limit: "30kb" }));
 app.use(express.urlencoded({ extended: false, limit: "30kb" }));
 app.use(cookieParser());
@@ -145,13 +147,15 @@ if (isProduction) {
     try {
       indexTemplate ??= await fs.promises.readFile(path.join(frontendDistDir, "index.html"), "utf8");
       const page = req.path.replace(/\/+$/, "") || "/";
+      const sections = await getSiteSections();
       res.status(appRoutes.has(page) ? 200 : 404)
         .set("Cache-Control", "no-cache")
         .type("html")
         .send(indexTemplate
           .replaceAll("__SITE_URL__", siteUrl(req))
           // Saved Website manager content, so pages render with it straight away.
-          .replace("__SITE_CONTENT__", toInlineJson(await getSiteSections())));
+          .replace("__SITE_CONTENT__", toInlineJson(sections))
+          .replace("<!-- __HERO_PRELOAD__ (the server starts loading the first slideshow photo here) -->", page === "/" ? heroPreloadTag(sections) : ""));
     } catch (error) {
       next(error);
     }

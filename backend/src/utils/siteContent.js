@@ -16,6 +16,18 @@ export function clearSiteSectionsCache() {
   cache = null;
 }
 
+// <link rel="preload"> for the first home page slide, so the browser fetches it before the app starts.
+// Built-in photos have a phone-sized -800 copy; uploaded ones are a single file.
+const DEFAULT_HERO_IMAGE = "/images/banner.webp";
+
+export function heroPreloadTag(sections) {
+  const image = sections.heroSlides?.[0]?.image || DEFAULT_HERO_IMAGE;
+  const builtIn = /^\/images\/([\w-]+)\.webp$/.exec(image);
+  if (!builtIn) return `<link rel="preload" as="image" href="${image}" />`;
+  const small = `/images/${builtIn[1]}-800.webp`;
+  return `<link rel="preload" as="image" href="${small}" imagesrcset="${small} 800w, ${image} 1600w" imagesizes="100vw" />`;
+}
+
 // Characters that could end the <script> tag early (<, >, &) or break older JS parsers
 // (U+2028/U+2029), written as JSON unicode escapes.
 const unsafeInScript = new Set(["<", ">", "&", String.fromCharCode(0x2028), String.fromCharCode(0x2029)]);

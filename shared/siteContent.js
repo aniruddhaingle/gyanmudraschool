@@ -43,7 +43,7 @@ export const siteSections = [
     minItems: 1,
     maxItems: 5,
     fields: [
-      image("image", "Photo"),
+      image("image", "Photo", { maxSize: 1600 }),
       text("kicker", "Small label", 60),
       text("title", "Headline", 80),
       area("text", "Text", 220)
@@ -125,7 +125,7 @@ export const siteSections = [
     minItems: 1,
     maxItems: 12,
     fields: [
-      image("image", "Photo"),
+      image("image", "Photo", { maxSize: 800 }),
       text("name", "Name", 80),
       text("role", "Role", 60),
       area("summary", "Short introduction (home page)", 220),

@@ -45,6 +45,17 @@ export async function storeSiteImage(file) {
   return `/api/site-media/${await storeImage(SITE_BUCKET, file)}`;
 }
 
+// Deletes Website manager photos that no saved section uses any more (e.g. replaced slides).
+// Photos uploaded in the last 24 hours are kept, since they may be in an editor that isn't saved yet.
+export async function deleteUnusedSiteImages(sections) {
+  const used = new Set((JSON.stringify(sections).match(/\/api\/site-media\/[a-f0-9]{24}/gi) || []).map((url) => url.slice(-24).toLowerCase()));
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const old = await mongoose.connection.db.collection(`${SITE_BUCKET}.files`).find({ uploadDate: { $lt: cutoff } }).project({ _id: 1 }).toArray();
+  const unused = old.filter(({ _id }) => !used.has(String(_id)));
+  await Promise.all(unused.map(({ _id }) => bucket(SITE_BUCKET).delete(_id)));
+  return unused.length;
+}
+
 export function storeAdmissionPhoto(file) {
   return storeImage(PRIVATE_BUCKET, file);
 }
