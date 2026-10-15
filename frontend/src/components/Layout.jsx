@@ -1,6 +1,6 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { ArrowUpRight, Mail, MapPin, Menu, Phone, ShieldCheck, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { school } from "../data/school.js";
 import CursorGlow from "../effects/CursorGlow.jsx";
 import MotionBackdrop from "../effects/MotionBackdrop.jsx";
@@ -28,12 +28,18 @@ const mailHref = `mailto:${school.email}`;
 
 export default function Layout() {
   const [open, setOpen] = useState(false);
-  const { pathname } = useLocation();
+  const { pathname, key } = useLocation();
+  const navigationType = useNavigationType();
   const headerRef = useRef(null);
 
-  // New page: start at the top, and update the browser tab title and description.
+  // Every link click (even to the page you're already on) starts at the top. This runs before the
+  // new page is drawn, so it never flashes scrolled down. Back/forward keeps the browser's position.
+  useLayoutEffect(() => {
+    if (navigationType !== "POP") window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [key, navigationType]);
+
+  // Update the browser tab title and description for each page.
   useEffect(() => {
-    window.scrollTo(0, 0);
     const path = pathname.replace(/(.)\/$/, "$1");
     const [title, description] = pageInfo[path] || [`Page not found | ${school.name}`, ""];
     document.title = title;
