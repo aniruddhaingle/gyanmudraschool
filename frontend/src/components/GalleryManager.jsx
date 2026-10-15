@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pencil, Sparkles, Trash2, X } from "lucide-react";
 import { detectEventTheme, eventThemes, getEventTheme, resolveTheme, themeStyle } from "../data/eventThemes.js";
+import ConfirmDialog from "./ConfirmDialog.jsx";
 import ThemeCover from "./ThemeCover.jsx";
 import { createGalleryEvent, deleteGalleryEvent, getGalleryEvents, updateGalleryEvent } from "../services/api.js";
 
@@ -17,6 +18,7 @@ export default function GalleryManager() {
   const [fileInputKey, setFileInputKey] = useState(0);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
 
   const detected = detectEventTheme(form);
   const theme = form.themeChoice === "auto" ? detected : getEventTheme(form.themeChoice);
@@ -88,7 +90,6 @@ export default function GalleryManager() {
   }
 
   async function remove(event) {
-    if (!window.confirm(`Delete “${event.title}” and all of its photos? This cannot be undone.`)) return;
     setBusy(true);
     try {
       await deleteGalleryEvent(event._id);
@@ -99,6 +100,7 @@ export default function GalleryManager() {
       setMessage(error.message);
     } finally {
       setBusy(false);
+      setPendingDelete(null);
     }
   }
 
@@ -181,13 +183,33 @@ export default function GalleryManager() {
                 </div>
                 <div className="gm-item-actions">
                   <button type="button" onClick={() => startEdit(event)} disabled={busy}><Pencil size={14} /> Edit</button>
-                  <button type="button" className="danger" onClick={() => remove(event)} disabled={busy}><Trash2 size={14} /> Delete</button>
+                  <button type="button" className="danger" onClick={() => setPendingDelete(event)} disabled={busy}><Trash2 size={14} /> Delete</button>
                 </div>
               </article>
             );
           })}
         </div>
       </section>
+
+      {pendingDelete ? (
+        <ConfirmDialog
+          title={`Delete “${pendingDelete.title}”?`}
+          confirmLabel="Yes, delete event"
+          busyLabel="Deleting..."
+          busy={busy}
+          onConfirm={() => remove(pendingDelete)}
+          onCancel={() => setPendingDelete(null)}
+        >
+          <div className="confirm-event">
+            <div className="gm-thumb">{pendingDelete.photos[0] ? <img src={pendingDelete.photos[0]} alt="" /> : <ThemeCover theme={resolveTheme(pendingDelete)} />}</div>
+            <div>
+              <b>{pendingDelete.title}</b>
+              <small>{resolveTheme(pendingDelete).label} theme · {pendingDelete.photos.length} photo{pendingDelete.photos.length === 1 ? "" : "s"}</small>
+            </div>
+          </div>
+          <p>It will disappear from the public gallery{pendingDelete.photos.length ? " and its photos will be removed permanently" : ""}. This can’t be undone.</p>
+        </ConfirmDialog>
+      ) : null}
     </div>
   );
 }
