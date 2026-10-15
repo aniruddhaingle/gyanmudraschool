@@ -14,6 +14,8 @@ import admissionsRouter from "./routes/admissions.js";
 import adminRouter from "./routes/admin.js";
 import galleryRouter from "./routes/gallery.js";
 import uploadsRouter from "./routes/uploads.js";
+import { adminSiteRouter, publicSiteRouter } from "./routes/site.js";
+import { getSiteSections, toInlineJson } from "./utils/siteContent.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 import { ensureInitialAdmin } from "./utils/seedAdmin.js";
 
@@ -89,6 +91,7 @@ app.get("/api/health", (req, res) => {
 // Public gallery images are mounted before the API limiter so a busy gallery page
 // (or many parents behind one school network) does not exhaust the shared quota.
 app.use("/api/uploads", uploadsRouter);
+app.use("/api", publicSiteRouter);
 
 app.use(
   "/api",
@@ -103,6 +106,7 @@ app.use(
 app.use("/api/admissions", admissionsRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/gallery", galleryRouter);
+app.use("/api/admin/site", adminSiteRouter);
 app.use("/api", notFound);
 
 // Public pages of the React app; anything else gets the app's "not found" page with a real 404 status.
@@ -144,7 +148,10 @@ if (isProduction) {
       res.status(appRoutes.has(page) ? 200 : 404)
         .set("Cache-Control", "no-cache")
         .type("html")
-        .send(indexTemplate.replaceAll("__SITE_URL__", siteUrl(req)));
+        .send(indexTemplate
+          .replaceAll("__SITE_URL__", siteUrl(req))
+          // Saved Website manager content, so pages render with it straight away.
+          .replace("__SITE_CONTENT__", toInlineJson(await getSiteSections())));
     } catch (error) {
       next(error);
     }

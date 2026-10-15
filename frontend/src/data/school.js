@@ -167,3 +167,33 @@ export const galleryEvents = [
     ]
   }
 ];
+
+export const ticker = ["✦ ADMISSIONS OPEN", "SCIENCE + SPORTS + STORIES", "✦ LEARN LOUDLY", "BIG IDEAS LIVE HERE"];
+
+export const pages = {
+  aboutTitle: "School, but make it a launchpad.",
+  aboutText: "We mix strong learning, wide-open curiosity, and real care—so children can grow into their loudest, kindest, most capable selves.",
+  admissionsTitle: "Let’s make this official.",
+  admissionsText: "One short form is all it takes to start a thoughtful conversation about your child’s next chapter.",
+  galleryTitle: "The good stuff, stuck right here.",
+  galleryText: "A little messy, a lot memorable—snapshots from the days that made everyone smile, cheer, and say ‘remember that?’",
+  leadershipTitle: "The grown-ups in your corner.",
+  leadershipText: "Big standards. Warm guidance. Great listeners. This is the team helping students turn ‘maybe I can’ into ‘watch me.’"
+};
+
+// Built-in content for every Website manager section (see shared/siteContent.js).
+// Sections the admin has saved replace these.
+export const siteDefaults = {
+  school: { name: school.name, location: school.location, phone: school.phone, email: school.email, address: school.address, tagline: school.tagline },
+  ticker,
+  heroSlides,
+  highlights,
+  programs,
+  campusShowcase,
+  facilities,
+  achievements,
+  experience,
+  leadership,
+  testimonials,
+  pages
+};

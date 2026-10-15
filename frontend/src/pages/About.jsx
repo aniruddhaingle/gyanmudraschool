@@ -1,10 +1,11 @@
 import PageHero from "../components/PageHero.jsx";
-import { achievements, facilities } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 
 export default function About() {
+  const { achievements, facilities, pages } = useSite();
   return (
     <section className="page-shell about-page">
-      <PageHero eyebrow="Our little-big story" title="School, but make it a launchpad." text="We mix strong learning, wide-open curiosity, and real care—so children can grow into their loudest, kindest, most capable selves." badge="SINCE DAY ONE" image="/images/slider1.webp" tone="teal" />
+      <PageHero eyebrow="Our little-big story" title={pages.aboutTitle} text={pages.aboutText} badge="SINCE DAY ONE" image="/images/slider1.webp" tone="teal" />
 
       <div className="story-grid page-content">
         <article className="story-card wide">
@@ -30,13 +31,13 @@ export default function About() {
         <div>
           <span className="list-label">THINGS WE CELEBRATE</span><h3>Wins worth cheering for</h3>
           <ul className="check-list">
-            {achievements.map((item) => <li key={item}>{item}</li>)}
+            {achievements.map((item, index) => <li key={index}>{item}</li>)}
           </ul>
         </div>
         <div>
           <span className="list-label">OUR EVERYDAY TOOLKIT</span><h3>Spaces made for doing</h3>
           <ul className="check-list">
-            {facilities.map((item) => <li key={item}>{item}</li>)}
+            {facilities.map((item, index) => <li key={index}>{item}</li>)}
           </ul>
         </div>
       </div>

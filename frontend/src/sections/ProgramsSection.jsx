@@ -1,11 +1,12 @@
 import SectionHeader from "../components/SectionHeader.jsx";
 import Reveal from "../effects/Reveal.jsx";
-import { programs } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 import { BookOpen, Compass, Rocket } from "lucide-react";
 
 const programIcons = [BookOpen, Compass, Rocket];
 
 export default function ProgramsSection() {
+  const { programs } = useSite();
   return (
     <section className="content-band">
       <SectionHeader
@@ -15,9 +16,9 @@ export default function ProgramsSection() {
       />
       <div className="program-grid">
         {programs.map((program, index) => (
-          <Reveal as="article" className={`program-card program-card-${index + 1}`} delay={index * 100} key={program.title}>
-            {(() => { const Icon = programIcons[index]; return <Icon className="program-icon" aria-hidden="true" />; })()}
-            <span className="program-number">0{index + 1}</span>
+          <Reveal as="article" className={`program-card program-card-${(index % 3) + 1}`} delay={index * 100} key={index}>
+            {(() => { const Icon = programIcons[index % programIcons.length]; return <Icon className="program-icon" aria-hidden="true" />; })()}
+            <span className="program-number">{String(index + 1).padStart(2, "0")}</span>
             <div>
               <span>{program.range}</span>
               <h3>{program.title}</h3>

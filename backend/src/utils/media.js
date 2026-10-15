@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 // Gallery photos are public; admission photos (of minors) live in a separate, admin-only bucket.
 export const PUBLIC_BUCKET = "media";
 export const PRIVATE_BUCKET = "admission-photos";
+// Photos uploaded in Website manager (slideshow, staff photos); always public.
+export const SITE_BUCKET = "site-media";
 
 const bucket = (name) => new GridFSBucket(mongoose.connection.db, { bucketName: name });
 
@@ -37,6 +39,10 @@ export async function deleteGalleryImage(url) {
     // Already gone (or a built-in /gallery image); nothing to clean up.
     if (!/FileNotFound|File not found/i.test(error.message)) throw error;
   }
+}
+
+export async function storeSiteImage(file) {
+  return `/api/site-media/${await storeImage(SITE_BUCKET, file)}`;
 }
 
 export function storeAdmissionPhoto(file) {

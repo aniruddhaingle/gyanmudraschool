@@ -2137,3 +2137,48 @@ tbody tr:nth-child(3n) td { background: #e3d9ff; }
 .admission-status select[data-status="Admitted"] { background:#c8f7c5; }
 .admission-status select[data-status="Rejected"] { background:#e5e7eb; }
 @media (max-width:560px) { .admission-row { flex-direction:column; align-items:flex-start; gap:10px; } }
+
+/* Admin: Website manager (edit site content). */
+.wm { display:grid; gap:24px; }
+.wm-intro > span,.wm-editor-head span { color:#5b35d5; font-size:.72rem; font-weight:950; letter-spacing:.12em; }
+.wm-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:22px; align-items:start; }
+.wm-sections { position:sticky; top:96px; display:grid; gap:8px; }
+.wm-sections button { display:grid; gap:2px; padding:12px 14px; border:2px solid #18203a; border-radius:12px 4px; color:#18203a; background:#fffdf6; font:inherit; text-align:left; cursor:pointer; box-shadow:3px 3px 0 #18203a; transition:transform 140ms ease; }
+.wm-sections button:hover { transform:translate(-1px,-1px); }
+.wm-sections button.active { background:#ffcf3f; }
+.wm-sections strong { display:flex; align-items:center; gap:6px; font-size:.9rem; }
+.wm-sections small { color:#4b5563; font-size:.72rem; font-weight:800; }
+.wm-editor-head { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:18px; }
+.wm-editor-head .gm-link { display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.wm-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.wm-field { display:grid; gap:6px; }
+.wm-field:has(textarea) { grid-column:1 / -1; }
+.admin-console .wm-label { display:flex; align-items:center; gap:6px; color:#18203a; font-size:.78rem; font-weight:900; }
+.wm-label em { color:#4b5563; font-style:normal; font-weight:700; }
+.wm-label small { margin-left:auto; color:#4b5563; font-size:.7rem; font-weight:700; }
+.wm-field input,.wm-field textarea { width:100%; padding:11px 12px; color:#18203a; background:#fff; font:inherit; font-size:.95rem; font-weight:600; }
+.wm-field textarea { resize:vertical; }
+.wm-list { display:grid; gap:16px; }
+.wm-item { position:relative; margin:0; padding:18px 16px 16px; border:2px dashed #18203a; border-radius:16px 4px; background:#fffaf0; }
+.wm-item legend { padding:0 8px; color:#5b35d5; font-size:.75rem; font-weight:950; letter-spacing:.08em; text-transform:uppercase; }
+.wm-item > .wm-item-controls { position:absolute; top:-16px; right:12px; }
+.wm-string { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:end; }
+.wm-item-controls { display:flex; gap:6px; }
+.wm-item-controls button { display:grid; place-items:center; width:32px; height:32px; padding:0; border:2px solid #18203a; border-radius:8px 3px; color:#18203a; background:#fffdf6; cursor:pointer; }
+.wm-item-controls button.danger { background:#ffb3c8; }
+.wm-item-controls button:disabled { opacity:.35; cursor:not-allowed; }
+.wm-image { display:grid; gap:8px; grid-column:1 / -1; }
+.wm-image-row { display:flex; flex-wrap:wrap; align-items:center; gap:14px; }
+.wm-image img,.wm-image-empty { width:160px; aspect-ratio:16 / 10; border:2px solid #18203a; border-radius:10px 3px; object-fit:cover; background:#18203a; }
+.wm-image-empty { display:grid; place-items:center; color:#fffdf6; font-size:.75rem; font-weight:800; }
+.wm-upload { position:relative; display:inline-flex; align-items:center; gap:6px; overflow:hidden; cursor:pointer; }
+.wm-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.wm-error { margin:0; color:#b4234d; font-size:.82rem; font-weight:800; }
+.wm-add { display:inline-flex; align-items:center; gap:6px; margin-top:14px; }
+.wm-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:22px; padding-top:18px; border-top:2px solid #e7dfc8; }
+.wm-actions .primary-action { margin:0; }
+.wm-actions .gm-link { display:inline-flex; align-items:center; gap:6px; }
+.wm-empty p { margin:0; }
+.wm-hint { margin-top:8px !important; color:#4b5563; font-size:.9rem; }
+@media (max-width:860px) { .wm-layout { grid-template-columns:1fr; }.wm-sections { position:static; grid-template-columns:repeat(2,minmax(0,1fr)); }.wm-fields { grid-template-columns:1fr; } }
+@media (max-width:480px) { .wm-sections { grid-template-columns:1fr; } }

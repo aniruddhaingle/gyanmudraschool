@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bell, ClipboardList, Images, LayoutDashboard, LogOut, Settings2, X } from "lucide-react";
 import GalleryManager from "../components/GalleryManager.jsx";
+import WebsiteManager from "../components/WebsiteManager.jsx";
 import { getAdminSession, getAdmissions, loginAdmin, logoutAdmin, markAdmissionsSeen, updateAdmissionStatus } from "../services/api.js";
 
 const tabs = [["overview", "Overview", LayoutDashboard], ["admissions", "Admissions", ClipboardList], ["gallery", "Events & gallery", Images], ["website", "Website manager", Settings2]];
@@ -175,19 +176,7 @@ export default function Admin() {
 
         {tab === "gallery" && <GalleryManager />}
 
-        {tab === "website" && (
-          <section className="admin-panel">
-            <span>WEBSITE MANAGER</span>
-            <h2>Manage every part, from one place.</h2>
-            <p>Gallery is ready now. Leadership, school details, home-page content, and programs are the next editable modules.</p>
-            <div className="website-tiles">
-              <button onClick={() => setTab("gallery")}><Images /> Events & gallery <small>Open →</small></button>
-              <button disabled>School details <small>Next module</small></button>
-              <button disabled>Leadership <small>Next module</small></button>
-              <button disabled>Home content <small>Next module</small></button>
-            </div>
-          </section>
-        )}
+        {tab === "website" && <WebsiteManager onOpenGallery={() => setTab("gallery")} />}
       </main>
 
       {alert && (

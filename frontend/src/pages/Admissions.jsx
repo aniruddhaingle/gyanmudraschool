@@ -6,6 +6,7 @@ import { compressImage } from "../utils/compressImage.js";
 import PageHero from "../components/PageHero.jsx";
 import SectionHeader from "../components/SectionHeader.jsx";
 import { admissionSession } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 
 const initialState = {
   firstName: "",
@@ -19,6 +20,7 @@ const initialState = {
 };
 
 export default function Admissions() {
+  const { pages } = useSite();
   const [form, setForm] = useState(initialState);
   const [photo, setPhoto] = useState(null);
   const [status, setStatus] = useState({ type: "", message: "" });
@@ -69,7 +71,7 @@ export default function Admissions() {
 
   return (
     <section className="page-shell admission-page">
-      <PageHero eyebrow={`Admissions ${admissionSession()}`} title="Let’s make this official." text="One short form is all it takes to start a thoughtful conversation about your child’s next chapter." badge="YOU’RE INVITED" image="/images/slider2.webp" tone="purple" />
+      <PageHero eyebrow={`Admissions ${admissionSession()}`} title={pages.admissionsTitle} text={pages.admissionsText} badge="YOU’RE INVITED" image="/images/slider2.webp" tone="purple" />
       <div className="admission-stage">
       <div className="admission-hero-panel">
         <Reveal>

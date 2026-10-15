@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useLocation, useNavigationType } from "react-router-dom";
 import { ArrowUpRight, Mail, MapPin, Menu, Phone, ShieldCheck, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { school } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 import CursorGlow from "../effects/CursorGlow.jsx";
 import MotionBackdrop from "../effects/MotionBackdrop.jsx";
 
@@ -17,20 +17,21 @@ const navItems = [
 // The footer lists only the public pages.
 const footerItems = navItems.filter(([, path]) => path !== "/admin");
 
-const pageInfo = {
+const pageInfoFor = (school) => ({
   "/": [`${school.name}, Palsud | School in Barwani`, `${school.name}, Palsud (Barwani): joyful learning, strong basics, and JNV, EMRS and Olympiad preparation. Admissions open.`],
   "/about": [`About Us | ${school.name}`, `How ${school.name} teaches, what we celebrate, and the facilities our students use every day.`],
   "/admissions": [`Admissions | ${school.name}`, `Apply online to ${school.name}, Palsud. One short form, and our team will call you back.`],
   "/gallery": [`Gallery | ${school.name}`, `Photos from festivals, events, and everyday school life at ${school.name}.`],
   "/leadership": [`Leadership | ${school.name}`, `Meet the principal and team who guide students at ${school.name}.`],
   "/admin": [`Admin | ${school.name}`, ""]
-};
+});
 
-const phoneHref = `tel:${school.phone.replace(/[^+\d]/g, "")}`;
-const mailHref = `mailto:${school.email}`;
 
 export default function Layout() {
   const [open, setOpen] = useState(false);
+  const { school, ticker } = useSite();
+  const phoneHref = `tel:${school.phone.replace(/[^+\d]/g, "")}`;
+  const mailHref = `mailto:${school.email}`;
   const { pathname, key } = useLocation();
   const navigationType = useNavigationType();
   const headerRef = useRef(null);
@@ -44,10 +45,10 @@ export default function Layout() {
   // Update the browser tab title and description for each page.
   useEffect(() => {
     const path = pathname.replace(/(.)\/$/, "$1");
-    const [title, description] = pageInfo[path] || [`Page not found | ${school.name}`, ""];
+    const [title, description] = pageInfoFor(school)[path] || [`Page not found | ${school.name}`, ""];
     document.title = title;
     if (description) document.querySelector("meta[name=description]")?.setAttribute("content", description);
-  }, [pathname]);
+  }, [pathname, school]);
 
   // Close the mobile menu with Escape or a tap outside it.
   useEffect(() => {
@@ -98,7 +99,8 @@ export default function Layout() {
       </header>
       <div className="campus-ticker" aria-label="School updates">
         <div>
-          <span>✦ ADMISSIONS OPEN</span><span>SCIENCE + SPORTS + STORIES</span><span>✦ LEARN LOUDLY</span><span>BIG IDEAS LIVE HERE</span><span>✦ ADMISSIONS OPEN</span><span>SCIENCE + SPORTS + STORIES</span><span>✦ LEARN LOUDLY</span><span>BIG IDEAS LIVE HERE</span>
+          {/* Listed twice so the scrolling loop is seamless. */}
+          {[...ticker, ...ticker].map((message, index) => <span key={index} aria-hidden={index >= ticker.length || undefined}>{message}</span>)}
         </div>
       </div>
 

@@ -1,11 +1,13 @@
 import SectionHeader from "../components/SectionHeader.jsx";
 import Reveal from "../effects/Reveal.jsx";
-import { campusShowcase } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 import { Atom, HeartHandshake, Megaphone, Target } from "lucide-react";
 
 const showcaseIcons = [Atom, Megaphone, HeartHandshake, Target];
+const tones = ["large", "dark", "light", "accent"];
 
 export default function CampusShowcase() {
+  const { campusShowcase } = useSite();
   return (
     <section className="campus-showcase">
       <SectionHeader
@@ -15,10 +17,10 @@ export default function CampusShowcase() {
       />
       <div className="bento-grid">
         {campusShowcase.map((item, index) => (
-          <Reveal as="article" className={`bento-card ${item.tone}`} delay={index * 90} key={item.title}>
-            {(() => { const Icon = showcaseIcons[index]; return <Icon className="bento-icon" aria-hidden="true" />; })()}
+          <Reveal as="article" className={`bento-card ${tones[index % tones.length]}`} delay={index * 90} key={index}>
+            {(() => { const Icon = showcaseIcons[index % showcaseIcons.length]; return <Icon className="bento-icon" aria-hidden="true" />; })()}
             <div>
-              <span>THE GOOD STUFF / 0{index + 1}</span>
+              <span>THE GOOD STUFF / {String(index + 1).padStart(2, "0")}</span>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
             </div>

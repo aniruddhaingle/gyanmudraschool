@@ -1,28 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CalendarCheck, Microscope, ShieldCheck, Sparkles, Trophy } from "lucide-react";
-import { heroSlides, school } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 import { responsiveImage } from "../utils/images.js";
 
 export default function HeroSection() {
+  const { heroSlides, school } = useSite();
   const [activeSlide, setActiveSlide] = useState(0);
   // Download a slide only once it is showing or up next, instead of every photo on first load.
   const [loaded, setLoaded] = useState(() => new Set([0, 1]));
-  const slide = heroSlides[activeSlide];
+  const slideCount = heroSlides.length;
+  const slide = heroSlides[activeSlide % slideCount];
 
   useEffect(() => {
-    setLoaded((current) => new Set([...current, activeSlide, (activeSlide + 1) % heroSlides.length]));
-  }, [activeSlide]);
+    setLoaded((current) => new Set([...current, activeSlide, (activeSlide + 1) % slideCount]));
+  }, [activeSlide, slideCount]);
 
   useEffect(() => {
     // Respect phones and computers set to reduce motion: no automatic slide changes.
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
     const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % heroSlides.length);
+      setActiveSlide((current) => (current + 1) % slideCount);
     }, 5200);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [slideCount]);
 
   return (
     <section className="hero">
@@ -30,11 +32,11 @@ export default function HeroSection() {
         {heroSlides.map((item, index) => (
           loaded.has(index) ? (
             <img
-              className={index === activeSlide ? "active" : ""}
+              className={index === activeSlide % slideCount ? "active" : ""}
               {...responsiveImage(item.image)}
               sizes="100vw"
-              alt={index === activeSlide ? `Students at ${school.name}, ${school.location}` : ""}
-              key={item.image}
+              alt={index === activeSlide % slideCount ? `Students at ${school.name}, ${school.location}` : ""}
+              key={index}
             />
           ) : null
         ))}
@@ -66,9 +68,9 @@ export default function HeroSection() {
         <div className="hero-slide-dots" aria-label="Hero slides">
           {heroSlides.map((item, index) => (
             <button
-              className={index === activeSlide ? "active" : ""}
+              className={index === activeSlide % slideCount ? "active" : ""}
               type="button"
-              key={item.title}
+              key={index}
               aria-label={`Show slide ${index + 1}`}
               onClick={() => setActiveSlide(index)}
             />

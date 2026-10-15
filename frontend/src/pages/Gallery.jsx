@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
 import PageHero from "../components/PageHero.jsx";
 import { galleryEvents } from "../data/school.js";
+import { useSite } from "../context/SiteContent.jsx";
 import ThemeCover from "../components/ThemeCover.jsx";
 import { resolveTheme, themeStyle } from "../data/eventThemes.js";
 import { getGalleryEvents } from "../services/api.js";
@@ -76,6 +77,7 @@ function EventAlbum({ event, onClose }) {
 }
 
 export default function Gallery() {
+  const { pages } = useSite();
   const [selected, setSelected] = useState(null);
   const [managedEvents, setManagedEvents] = useState([]);
 
@@ -87,7 +89,7 @@ export default function Gallery() {
 
   return (
     <section className="page-shell gallery-page">
-      <PageHero eyebrow="The yearbook wall" title="The good stuff, stuck right here." text="A little messy, a lot memorable—snapshots from the days that made everyone smile, cheer, and say ‘remember that?’" badge="CORE MEMORIES" tone="pink" />
+      <PageHero eyebrow="The yearbook wall" title={pages.galleryTitle} text={pages.galleryText} badge="CORE MEMORIES" tone="pink" />
       <section className="scrapbook-intro page-content"><span>✦ SCHOOL YEARBOOK / ONGOING</span><h2>Every photo has<br />a little story.</h2><p>Events, achievements, experiments, team moments, and the sweet everyday chaos in between. Your photos will live here as one growing school memory wall.</p></section>
       <section className="scrapbook-wall scrapbook-wall-uniform page-content" aria-label="School scrapbook">
         {events.map((event, index) => {

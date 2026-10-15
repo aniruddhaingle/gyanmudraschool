@@ -81,3 +81,26 @@ export async function updateGalleryEvent(id, formData) {
 export async function deleteGalleryEvent(id) {
   return parseResponse(await fetch(apiUrl(`/api/gallery/events/${id}`), { method: "DELETE", credentials: "include" }));
 }
+
+export async function getSiteContent() {
+  return parseResponse(await fetch(apiUrl("/api/site")));
+}
+
+export async function saveSiteSection(key, value) {
+  return parseResponse(await fetch(apiUrl(`/api/admin/site/${key}`), {
+    method: "PUT",
+    headers: jsonHeaders,
+    credentials: "include",
+    body: JSON.stringify({ value })
+  }));
+}
+
+export async function resetSiteSection(key) {
+  return parseResponse(await fetch(apiUrl(`/api/admin/site/${key}`), { method: "DELETE", credentials: "include" }));
+}
+
+export async function uploadSiteImage(file) {
+  const data = new FormData();
+  data.append("image", file);
+  return parseResponse(await fetch(apiUrl("/api/admin/site/images"), { method: "POST", credentials: "include", body: data }));
+}

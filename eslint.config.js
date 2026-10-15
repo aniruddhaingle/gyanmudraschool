@@ -16,7 +16,7 @@ export default [
     ]
   },
   {
-    files: ["frontend/src/**/*.{js,jsx}", "frontend/scripts/**/*.mjs", "backend/src/**/*.js"],
+    files: ["frontend/src/**/*.{js,jsx}", "frontend/scripts/**/*.mjs", "backend/src/**/*.js", "shared/**/*.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",

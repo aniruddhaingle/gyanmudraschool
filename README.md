@@ -22,6 +22,10 @@ app with online admissions, a festival photo gallery, and a private admin panel.
 - A popup announces enquiries that arrived since your last visit
 - Publish, edit, and delete gallery events and photos; the album theme is detected
   automatically from the event name (English or Hindi) and can be changed
+- **Website manager:** change the school details, announcement bar, home page slideshow
+  (with photo upload), numbers, programs, campus highlights, facilities, achievements,
+  daily timeline, leadership and staff, testimonials, and page headings. Changes go live
+  immediately, and any section can be restored to its original content
 - Stays logged in across page refreshes for 2 hours
 
 ## Tech stack
@@ -127,7 +131,10 @@ will stop admin login from working.
 
 ## Adding or replacing photos
 
-Site photos are optimized before they are served:
+The easiest way to change site photos is **Admin → Website manager** (slideshow and
+staff photos); uploads there are resized automatically.
+
+Built-in photos are optimized before they are served:
 
 1. Put the original photo in `frontend/image-sources/` (keep the same file name to
    replace an existing one).
@@ -158,13 +165,16 @@ npm.cmd --prefix frontend run images   # optimize photos in image-sources/
 ## Project structure
 
 ```text
+shared/
+  siteContent.js   Editable website sections and their validation (used by both apps)
 frontend/
   image-sources/   Full-size original photos (not served; run `npm run images`)
   public/          Optimized images, icons, built-in gallery albums
   scripts/         Image optimizer
   src/
-    components/    Layout, gallery manager, dialogs
-    data/          School content and festival themes
+    components/    Layout, gallery and website managers, dialogs
+    context/       Website content provider (saved content + defaults)
+    data/          Default school content and festival themes
     effects/       Animation helpers
     pages/         Home, About, Admissions, Gallery, Leadership, Admin
     sections/      Home page sections
@@ -192,6 +202,10 @@ backend/
 | POST | `/api/admin/admissions/seen` | Admin: dismiss the new-enquiries popup |
 | GET | `/api/admin/admissions/:id/photo` | Admin: student photo |
 | POST / PATCH / DELETE | `/api/gallery/events[/:id]` | Admin: manage gallery events |
+| GET | `/api/site` | Public: saved Website manager content |
+| GET | `/api/site-media/:id` | Public: photo uploaded in Website manager |
+| PUT / DELETE | `/api/admin/site/:section` | Admin: save or restore a website section |
+| POST | `/api/admin/site/images` | Admin: upload a website photo |
 | GET | `/api/health` | Server and database status |
 
 ## Security
