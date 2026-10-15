@@ -1,0 +1,33 @@
+# Render Blueprint: describes the web service so it can be created in one click.
+# Render > New > Blueprint > pick this repository. Values marked `sync: false` are asked for
+# during setup (they are secrets or depend on your domain) and are never stored in git.
+services:
+  - type: web
+    name: gyan-mudra-academy
+    runtime: node
+    # "starter" is a paid plan that stays awake; "free" sleeps after ~15 minutes without visitors,
+    # which makes the first visit slow. Change it here or in the Render dashboard.
+    plan: starter
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      # Both addresses of your site, comma-separated, e.g. https://www.yourschool.in,https://yourschool.in
+      - key: CLIENT_ORIGIN
+        sync: false
+      # The main address, e.g. https://www.yourschool.in
+      - key: PUBLIC_SITE_URL
+        sync: false
