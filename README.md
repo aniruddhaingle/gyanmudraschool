@@ -75,6 +75,7 @@ All server settings live in `backend/.env`. Never commit this file.
 | `ADMIN_PASSWORD_HASH` | The admin password, stored as a bcrypt hash (see below) |
 | `CLIENT_ORIGIN` | Address the website is opened from, e.g. `https://www.yourschool.in` |
 | `PUBLIC_SITE_URL` | Public address of the site, used for link previews and the sitemap |
+| `TRUST_PROXY` | How many proxies sit in front of the server (default `1`). See [Checking visitor addresses](#checking-visitor-addresses-on-your-host) |
 
 **Creating the admin password hash.** From the `backend` folder, run this with your
 chosen password, then paste the output into `ADMIN_PASSWORD_HASH`:
@@ -217,3 +218,16 @@ backend/
 - Uploads must be real JPG, PNG, or WebP images within size limits
 - Student photos are private: only a logged-in admin can view them; public photo
   links work only for photos in published gallery events
+
+## Checking visitor addresses on your host
+
+Rate limits (admin login, admissions form) count attempts per visitor address. Hosts put load
+balancers in front of the server, so the server must know how many to look past:
+
+1. Deploy, log in at `/admin`, then open `/api/admin/network-check` in the same browser.
+2. It shows `seenAs` (the address the server thinks you have), `forwardedFor`, and `proxiesInChain`.
+3. Compare `seenAs` with your real address (search "what is my IP"). If they differ, set
+   `TRUST_PROXY` to the value of `proxiesInChain`, let the service restart, and check again.
+4. Test from your phone on mobile data too: it should show a different `seenAs`.
+
+Never set it higher than the real number of proxies, or visitors could fake their address.

@@ -17,6 +17,10 @@ services:
         value: 22
       - key: NODE_ENV
         value: production
+      # Number of proxies in front of the server. Enter 1 at setup, then adjust in the Render dashboard
+      # after checking /api/admin/network-check (see README).
+      - key: TRUST_PROXY
+        sync: false
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET

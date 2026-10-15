@@ -74,6 +74,17 @@ router.get("/admissions", requireAdmin, asyncHandler(async (req, res) => {
   return res.json({ admissions, seenAt: admin?.admissionsSeenAt || null });
 }));
 
+// Shows how the server sees the logged-in admin's connection, to pick the right TRUST_PROXY value.
+router.get("/network-check", requireAdmin, (req, res) => {
+  const forwardedFor = req.headers["x-forwarded-for"] || "";
+  res.json({
+    seenAs: req.ip,
+    trustProxy: req.app.get("trust proxy"),
+    forwardedFor,
+    proxiesInChain: forwardedFor ? forwardedFor.split(",").length : 0
+  });
+});
+
 // Restores the admin panel after a page refresh while the login cookie is still valid.
 router.get("/session", requireAdmin, (req, res) => {
   res.json({ email: req.admin.email });

@@ -44,7 +44,10 @@ function validateProductionConfig() {
   if (process.env.JWT_SECRET.length < 32) throw new Error("JWT_SECRET must be at least 32 characters in production.");
 }
 
-app.set("trust proxy", 1);
+// How many proxies sit between visitors and this server (hosting load balancers, CDNs). Rate limits use
+// the visitor address, so this must match your host: check it with /api/admin/network-check after deploying.
+const trustedProxies = Number.parseInt(process.env.TRUST_PROXY ?? "1", 10);
+app.set("trust proxy", Number.isInteger(trustedProxies) && trustedProxies >= 0 ? trustedProxies : 1);
 app.disable("x-powered-by");
 
 app.use(
