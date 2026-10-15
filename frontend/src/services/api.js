@@ -41,6 +41,23 @@ export async function getAdmissions() {
   return parseResponse(response);
 }
 
+export async function getAdminSession() {
+  return parseResponse(await fetch(apiUrl("/api/admin/session"), { credentials: "include" }));
+}
+
+export async function markAdmissionsSeen() {
+  return parseResponse(await fetch(apiUrl("/api/admin/admissions/seen"), { method: "POST", credentials: "include" }));
+}
+
+export async function updateAdmissionStatus(id, status) {
+  return parseResponse(await fetch(apiUrl(`/api/admin/admissions/${id}`), {
+    method: "PATCH",
+    headers: jsonHeaders,
+    credentials: "include",
+    body: JSON.stringify({ status })
+  }));
+}
+
 export async function logoutAdmin() {
   const response = await fetch(apiUrl("/api/admin/logout"), {
     method: "POST",

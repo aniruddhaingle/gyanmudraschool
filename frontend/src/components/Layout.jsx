@@ -5,14 +5,17 @@ import { school } from "../data/school.js";
 import CursorGlow from "../effects/CursorGlow.jsx";
 import MotionBackdrop from "../effects/MotionBackdrop.jsx";
 
-// The admin panel stays at /admin but is not advertised in the public menu.
 const navItems = [
   ["Home", "/"],
   ["About", "/about"],
   ["Admissions", "/admissions"],
   ["Gallery", "/gallery"],
-  ["Leadership", "/leadership"]
+  ["Leadership", "/leadership"],
+  ["Admin", "/admin"]
 ];
+
+// The footer lists only the public pages.
+const footerItems = navItems.filter(([, path]) => path !== "/admin");
 
 const pageInfo = {
   "/": [`${school.name}, Palsud | School in Barwani`, `${school.name}, Palsud (Barwani): joyful learning, strong basics, and JNV, EMRS and Olympiad preparation. Admissions open.`],
@@ -110,7 +113,7 @@ export default function Layout() {
           <p>{school.tagline} A bright, grounded place for curious minds, kind hearts, and seriously good days.</p>
         </div>
         <div className="footer-links">
-          {navItems.map(([label, path]) => <NavLink key={path} to={path}>{label} <ArrowUpRight size={15} /></NavLink>)}
+          {footerItems.map(([label, path]) => <NavLink key={path} to={path}>{label} <ArrowUpRight size={15} /></NavLink>)}
         </div>
         <div className="footer-grid">
           <span><MapPin size={18} /> {school.address}</span>

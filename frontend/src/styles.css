@@ -2126,3 +2126,14 @@ tbody tr:nth-child(3n) td { background: #e3d9ff; }
 .footer-grid a { color:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:inherit; }
 .topbar a:hover,
 .footer-grid a:hover { text-decoration:underline; }
+
+/* Admin admissions list: status picker and "new since last visit" marker. */
+.admissions-head { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.admissions-head p { margin:4px 0 0; }
+.admission-row span a { color:inherit; font-weight:800; }
+.admission-new { margin-left:8px; padding:2px 7px; border-radius:99px; color:#fffdf6; background:#ff5c8a; font-size:.62rem; font-style:normal; font-weight:950; letter-spacing:.08em; vertical-align:middle; }
+.admission-status select { min-width:130px; padding:8px 10px; border:2px solid #18203a; border-radius:10px 3px; color:#18203a; background:#ffcf3f; font:inherit; font-size:.85rem; font-weight:900; cursor:pointer; }
+.admission-status select[data-status="Contacted"] { background:#baf5ed; }
+.admission-status select[data-status="Admitted"] { background:#c8f7c5; }
+.admission-status select[data-status="Rejected"] { background:#e5e7eb; }
+@media (max-width:560px) { .admission-row { flex-direction:column; align-items:flex-start; gap:10px; } }

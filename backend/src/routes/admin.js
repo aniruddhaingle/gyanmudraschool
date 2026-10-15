@@ -62,14 +62,45 @@ router.get("/admissions", requireAdmin, asyncHandler(async (req, res) => {
     return res.status(503).json({ message: "Database is not configured yet. Please set MONGODB_URI." });
   }
 
-  const admissions = await Admission.find()
-    .sort({ createdAt: -1 })
-    .select("firstName lastName phone classApplied status createdAt")
-    .limit(100)
-    .lean();
+  const [admissions, admin] = await Promise.all([
+    Admission.find()
+      .sort({ createdAt: -1 })
+      .select("firstName lastName phone classApplied status createdAt")
+      .limit(100)
+      .lean(),
+    AdminUser.findById(req.admin.sub).select("admissionsSeenAt").lean()
+  ]);
 
-  return res.json({ admissions });
+  return res.json({ admissions, seenAt: admin?.admissionsSeenAt || null });
 }));
+
+// Restores the admin panel after a page refresh while the login cookie is still valid.
+router.get("/session", requireAdmin, (req, res) => {
+  res.json({ email: req.admin.email });
+});
+
+router.post("/admissions/seen", requireAdmin, asyncHandler(async (req, res) => {
+  const seenAt = new Date();
+  await AdminUser.updateOne({ _id: req.admin.sub }, { admissionsSeenAt: seenAt });
+  return res.json({ seenAt });
+}));
+
+router.patch(
+  "/admissions/:id",
+  requireAdmin,
+  [body("status").isIn(Admission.schema.path("status").enumValues).withMessage("Choose a valid status.")],
+  handleValidation,
+  asyncHandler(async (req, res) => {
+    const id = parseObjectId(req.params.id);
+    const admission = id
+      ? await Admission.findByIdAndUpdate(id, { status: req.body.status }, { new: true, runValidators: true })
+        .select("firstName lastName phone classApplied status createdAt")
+        .lean()
+      : null;
+    if (!admission) return res.status(404).json({ message: "Enquiry not found." });
+    return res.json({ admission });
+  })
+);
 
 router.get("/admissions/:id/photo", requireAdmin, asyncHandler(async (req, res) => {
   const id = parseObjectId(req.params.id);
