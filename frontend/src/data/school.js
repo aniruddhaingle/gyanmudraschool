@@ -163,6 +163,7 @@ export const gallery = [
 export const galleryEvents = [
   {
     title: "Janmashtami",
+    theme: "janmashtami",
     tag: "FESTIVAL CELEBRATION",
     note: "A joyful Janmashtami celebration filled with colourful costumes, Krishna-inspired performances, and beautiful student moments.",
     cover: "/gallery/janmashtami/janmashtami-03.jpeg",

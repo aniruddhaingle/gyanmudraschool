@@ -28,6 +28,17 @@ export async function storeGalleryImage(file) {
   return publicUploadUrl(await storeImage(PUBLIC_BUCKET, file));
 }
 
+export async function deleteGalleryImage(url) {
+  const id = parseObjectId(String(url).split("/").pop());
+  if (!id) return;
+  try {
+    await bucket(PUBLIC_BUCKET).delete(id);
+  } catch (error) {
+    // Already gone (or a built-in /gallery image); nothing to clean up.
+    if (!/FileNotFound|File not found/i.test(error.message)) throw error;
+  }
+}
+
 export function storeAdmissionPhoto(file) {
   return storeImage(PRIVATE_BUCKET, file);
 }

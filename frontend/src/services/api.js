@@ -56,3 +56,11 @@ export async function getGalleryEvents() {
 export async function createGalleryEvent(formData) {
   return parseResponse(await fetch(apiUrl("/api/gallery/events"), { method: "POST", credentials: "include", body: formData }));
 }
+
+export async function updateGalleryEvent(id, formData) {
+  return parseResponse(await fetch(apiUrl(`/api/gallery/events/${id}`), { method: "PATCH", credentials: "include", body: formData }));
+}
+
+export async function deleteGalleryEvent(id) {
+  return parseResponse(await fetch(apiUrl(`/api/gallery/events/${id}`), { method: "DELETE", credentials: "include" }));
+}
